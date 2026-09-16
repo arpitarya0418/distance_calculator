@@ -34,16 +34,23 @@ st.html("""
    ============================== */
 
 .app-title {
-    color: #ffffff;
-    font-size: 38px;
-    font-weight: 700;
-    margin-bottom: 5px;
+    color: #ffffff !important;
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    overflow: visible !important;
 }
 
 .app-subtitle {
-    color: #cbd5e1;
-    font-size: 17px;
-    margin-bottom: 30px;
+    color: #cbd5e1 !important;
+    font-size: 17px !important;
+    line-height: 1.5 !important;
+    margin-top: 6px !important;
+    margin-bottom: 30px !important;
+    padding: 0 !important;
 }
 
 /* ==============================
@@ -51,25 +58,28 @@ st.html("""
    ============================== */
 
 .section-title {
-    color: #ffffff;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
+    color: #ffffff !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin-bottom: 10px !important;
 }
 
 .route-heading {
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 15px;
+    color: #ffffff !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin-bottom: 15px !important;
 }
 
 .locations-heading {
-    color: #ffffff;
-    font-size: 22px;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 12px;
+    color: #ffffff !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin-top: 20px !important;
+    margin-bottom: 12px !important;
 }
 
 /* ==============================
@@ -116,6 +126,7 @@ div[data-baseweb="select"] svg {
 }
 
 /* Dropdown */
+
 div[role="listbox"] {
     background: #ffffff !important;
 }
@@ -143,9 +154,9 @@ div[role="option"] * {
    ============================== */
 
 .footer-text {
-    color: #94a3b8;
-    text-align: center;
-    font-size: 13px;
+    color: #94a3b8 !important;
+    text-align: center !important;
+    font-size: 13px !important;
 }
 </style>
 """)
@@ -350,12 +361,15 @@ with right:
                 margin-bottom:14px;
                 box-shadow:0 2px 8px rgba(0,0,0,0.15);
                 color:#111827;
+                box-sizing:border-box;
+                width:100%;
             ">
 
                 <div style="
                     color:#111827;
                     font-size:20px;
                     font-weight:700;
+                    line-height:1.4;
                     margin-bottom:16px;
                 ">
                     {result["icon"]} {result["mode"]}
@@ -365,6 +379,7 @@ with right:
                     display:flex;
                     gap:80px;
                     flex-wrap:wrap;
+                    color:#111827;
                 ">
 
                     <div>
@@ -373,6 +388,7 @@ with right:
                             font-size:12px;
                             font-weight:700;
                             letter-spacing:0.5px;
+                            line-height:1.4;
                         ">
                             DISTANCE
                         </div>
@@ -381,6 +397,7 @@ with right:
                             color:#111827;
                             font-size:24px;
                             font-weight:700;
+                            line-height:1.4;
                             margin-top:3px;
                         ">
                             {result["distance"]}
@@ -393,6 +410,7 @@ with right:
                             font-size:12px;
                             font-weight:700;
                             letter-spacing:0.5px;
+                            line-height:1.4;
                         ">
                             ESTIMATED TIME
                         </div>
@@ -401,6 +419,7 @@ with right:
                             color:#111827;
                             font-size:24px;
                             font-weight:700;
+                            line-height:1.4;
                             margin-top:3px;
                         ">
                             {result["duration"]}
@@ -435,11 +454,14 @@ with right:
             padding:20px;
             margin-bottom:14px;
             color:#111827;
+            box-sizing:border-box;
+            width:100%;
         ">
 
             <div style="
                 color:#111827;
                 font-size:15px;
+                line-height:1.5;
                 margin-bottom:8px;
             ">
                 <strong>From:</strong> {source["name"]}
@@ -448,6 +470,7 @@ with right:
             <div style="
                 color:#111827;
                 font-size:15px;
+                line-height:1.5;
             ">
                 <strong>To:</strong> {destination["name"]}
             </div>
@@ -469,10 +492,13 @@ with right:
             padding:55px 20px;
             text-align:center;
             color:#111827;
+            box-sizing:border-box;
+            width:100%;
         ">
 
             <div style="
                 font-size:48px;
+                line-height:1.2;
                 margin-bottom:10px;
             ">
                 🗺️
@@ -482,6 +508,7 @@ with right:
                 color:#111827;
                 font-size:22px;
                 font-weight:700;
+                line-height:1.4;
                 margin-bottom:8px;
             ">
                 Ready to calculate
@@ -490,6 +517,7 @@ with right:
             <div style="
                 color:#64748b;
                 font-size:15px;
+                line-height:1.5;
             ">
                 Select your source and destination,
                 then click
