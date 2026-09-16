@@ -9,79 +9,87 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==============================
-# THEME / CSS
-# ==============================
+# ============================================================
+# CSS
+# ============================================================
 
-st.markdown("""
+st.html("""
 <style>
-/* Main application */
+/* ==============================
+   APPLICATION
+   ============================== */
+
 .stApp {
     background: #0f172a !important;
 }
 
-/* Main content */
 .block-container {
+    max-width: 1200px !important;
     padding-top: 2rem !important;
     padding-bottom: 2rem !important;
-    max-width: 1200px !important;
-}
-
-/* Main title */
-.app-title {
-    color: #ffffff !important;
-    font-size: 38px !important;
-    font-weight: 700 !important;
-    margin-bottom: 4px !important;
-}
-
-/* Subtitle */
-.app-subtitle {
-    color: #cbd5e1 !important;
-    font-size: 17px !important;
-    margin-bottom: 30px !important;
-}
-
-/* Section headings */
-.section-title {
-    color: #ffffff !important;
-    font-size: 20px !important;
-    font-weight: 700 !important;
-    margin-bottom: 10px !important;
-}
-
-.route-heading {
-    color: #ffffff !important;
-    font-size: 24px !important;
-    font-weight: 700 !important;
-    margin-bottom: 15px !important;
-}
-
-.locations-heading {
-    color: #ffffff !important;
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    margin-top: 20px !important;
-    margin-bottom: 12px !important;
 }
 
 /* ==============================
-   INPUT BOXES
+   TITLE
+   ============================== */
+
+.app-title {
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.app-subtitle {
+    color: #cbd5e1;
+    font-size: 17px;
+    margin-bottom: 30px;
+}
+
+/* ==============================
+   SECTION TITLES
+   ============================== */
+
+.section-title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.route-heading {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.locations-heading {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+/* ==============================
+   INPUTS
    ============================== */
 
 div[data-baseweb="input"] {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
     border-radius: 8px !important;
 }
 
 div[data-baseweb="input"] > div {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
 }
 
 div[data-baseweb="input"] input {
+    background: #ffffff !important;
     color: #111827 !important;
-    background-color: #ffffff !important;
     -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
 }
 
 div[data-baseweb="input"] input::placeholder {
@@ -91,11 +99,11 @@ div[data-baseweb="input"] input::placeholder {
 }
 
 /* ==============================
-   SELECT BOX
+   SELECTBOX
    ============================== */
 
 div[data-baseweb="select"] > div {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
     border-radius: 8px !important;
 }
 
@@ -107,97 +115,18 @@ div[data-baseweb="select"] svg {
     fill: #111827 !important;
 }
 
-/* Dropdown options */
+/* Dropdown */
 div[role="listbox"] {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
 }
 
 div[role="option"] {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
     color: #111827 !important;
 }
 
 div[role="option"] * {
     color: #111827 !important;
-}
-
-/* ==============================
-   RESULT CARD
-   ============================== */
-
-.result-card {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 14px !important;
-    padding: 20px !important;
-    margin-bottom: 14px !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-}
-
-.result-title {
-    color: #111827 !important;
-    font-size: 20px !important;
-    font-weight: 700 !important;
-    margin-bottom: 16px !important;
-}
-
-.result-label {
-    color: #64748b !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.5px !important;
-}
-
-.result-value {
-    color: #111827 !important;
-    font-size: 24px !important;
-    font-weight: 700 !important;
-    margin-top: 3px !important;
-}
-
-/* ==============================
-   LOCATION CARD
-   ============================== */
-
-.location-card {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 14px !important;
-    padding: 20px !important;
-    margin-bottom: 14px !important;
-}
-
-.location-text {
-    color: #111827 !important;
-    font-size: 15px !important;
-    margin-bottom: 8px !important;
-}
-
-.location-text b {
-    color: #111827 !important;
-}
-
-/* ==============================
-   READY CARD
-   ============================== */
-
-.ready-card {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 14px !important;
-    padding: 55px 20px !important;
-    text-align: center !important;
-}
-
-.ready-title {
-    color: #111827 !important;
-    font-size: 22px !important;
-    font-weight: 700 !important;
-}
-
-.ready-text {
-    color: #64748b !important;
-    font-size: 15px !important;
 }
 
 /* ==============================
@@ -210,44 +139,31 @@ div[role="option"] * {
 }
 
 /* ==============================
-   WARNINGS / ERRORS
-   ============================== */
-
-div[data-testid="stAlert"] {
-    border-radius: 8px !important;
-}
-
-/* ==============================
    FOOTER
    ============================== */
 
-.footer {
-    color: #94a3b8 !important;
-    text-align: center !important;
-    font-size: 13px !important;
+.footer-text {
+    color: #94a3b8;
+    text-align: center;
+    font-size: 13px;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
-# ==============================
+# ============================================================
 # HEADER
-# ==============================
+# ============================================================
 
-st.markdown(
-    '<div class="app-title">📍 Distance Calculator</div>',
-    unsafe_allow_html=True
-)
+st.html("""
+<div class="app-title">📍 Distance Calculator</div>
+<div class="app-subtitle">
+    Compare distance and estimated travel time between two locations.
+</div>
+""")
 
-st.markdown(
-    '<div class="app-subtitle">'
-    'Compare distance and estimated travel time between two locations.'
-    '</div>',
-    unsafe_allow_html=True
-)
-
-# ==============================
+# ============================================================
 # SESSION STATE
-# ==============================
+# ============================================================
 
 if "source_results" not in st.session_state:
     st.session_state.source_results = []
@@ -255,9 +171,9 @@ if "source_results" not in st.session_state:
 if "destination_results" not in st.session_state:
     st.session_state.destination_results = []
 
-# ==============================
-# MAIN LAYOUT
-# ==============================
+# ============================================================
+# LAYOUT
+# ============================================================
 
 left, right = st.columns([1, 2], gap="large")
 
@@ -267,10 +183,9 @@ left, right = st.columns([1, 2], gap="large")
 
 with left:
 
-    st.markdown(
-        '<div class="section-title">📍 Source</div>',
-        unsafe_allow_html=True
-    )
+    st.html("""
+    <div class="section-title">📍 Source</div>
+    """)
 
     source_query = st.text_input(
         "Search source",
@@ -301,15 +216,10 @@ with left:
 
         source = source_options[source_index]
 
-    st.markdown(
-        '<div style="height:25px;"></div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section-title">🏁 Destination</div>',
-        unsafe_allow_html=True
-    )
+    st.html("""
+    <div style="height:25px;"></div>
+    <div class="section-title">🏁 Destination</div>
+    """)
 
     destination_query = st.text_input(
         "Search destination",
@@ -340,10 +250,9 @@ with left:
 
         destination = destination_options[destination_index]
 
-    st.markdown(
-        '<div style="height:25px;"></div>',
-        unsafe_allow_html=True
-    )
+    st.html("""
+    <div style="height:25px;"></div>
+    """)
 
     calculate = st.button(
         "🚀 Calculate Route",
@@ -357,10 +266,13 @@ with left:
 
 with right:
 
-    st.markdown(
-        '<div class="route-heading">Route Results</div>',
-        unsafe_allow_html=True
-    )
+    st.html("""
+    <div class="route-heading">Route Results</div>
+    """)
+
+    # ========================================================
+    # CALCULATE
+    # ========================================================
 
     if calculate:
 
@@ -424,66 +336,83 @@ with right:
                     })
 
         # ====================================================
-        # ROUTE RESULT CARDS
+        # RESULT CARDS
         # ====================================================
 
         for result in results:
 
-            with st.container():
+            st.html(f"""
+            <div style="
+                background:#ffffff;
+                border:1px solid #e2e8f0;
+                border-radius:14px;
+                padding:20px;
+                margin-bottom:14px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.15);
+                color:#111827;
+            ">
 
-                st.markdown(
-                    '<div class="result-card">',
-                    unsafe_allow_html=True
-                )
+                <div style="
+                    color:#111827;
+                    font-size:20px;
+                    font-weight:700;
+                    margin-bottom:16px;
+                ">
+                    {result["icon"]} {result["mode"]}
+                </div>
 
-                st.markdown(
-                    f'<div class="result-title">'
-                    f'{result["icon"]} {result["mode"]}'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
+                <div style="
+                    display:flex;
+                    gap:80px;
+                    flex-wrap:wrap;
+                ">
 
-                col1, col2 = st.columns(2)
+                    <div>
+                        <div style="
+                            color:#64748b;
+                            font-size:12px;
+                            font-weight:700;
+                            letter-spacing:0.5px;
+                        ">
+                            DISTANCE
+                        </div>
 
-                with col1:
+                        <div style="
+                            color:#111827;
+                            font-size:24px;
+                            font-weight:700;
+                            margin-top:3px;
+                        ">
+                            {result["distance"]}
+                        </div>
+                    </div>
 
-                    st.markdown(
-                        '<div class="result-label">'
-                        'DISTANCE'
-                        '</div>',
-                        unsafe_allow_html=True
-                    )
+                    <div>
+                        <div style="
+                            color:#64748b;
+                            font-size:12px;
+                            font-weight:700;
+                            letter-spacing:0.5px;
+                        ">
+                            ESTIMATED TIME
+                        </div>
 
-                    st.markdown(
-                        f'<div class="result-value">'
-                        f'{result["distance"]}'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
+                        <div style="
+                            color:#111827;
+                            font-size:24px;
+                            font-weight:700;
+                            margin-top:3px;
+                        ">
+                            {result["duration"]}
+                        </div>
+                    </div>
 
-                with col2:
+                </div>
 
-                    st.markdown(
-                        '<div class="result-label">'
-                        'ESTIMATED TIME'
-                        '</div>',
-                        unsafe_allow_html=True
-                    )
-
-                    st.markdown(
-                        f'<div class="result-value">'
-                        f'{result["duration"]}'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-
-                st.markdown(
-                    '</div>',
-                    unsafe_allow_html=True
-                )
+            </div>
+            """)
 
             if result["error"]:
-
                 st.caption(
                     f'{result["mode"]} route unavailable.'
                 )
@@ -492,70 +421,94 @@ with right:
         # SELECTED LOCATIONS
         # ====================================================
 
-        st.markdown(
-            '<div class="locations-heading">'
-            '📌 Selected Locations'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.html("""
+        <div class="locations-heading">
+            📌 Selected Locations
+        </div>
+        """)
 
-        st.markdown(
-            '<div class="location-card">',
-            unsafe_allow_html=True
-        )
+        st.html(f"""
+        <div style="
+            background:#ffffff;
+            border:1px solid #e2e8f0;
+            border-radius:14px;
+            padding:20px;
+            margin-bottom:14px;
+            color:#111827;
+        ">
 
-        st.markdown(
-            f'<div class="location-text">'
-            f'<b>From:</b> {source["name"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
+            <div style="
+                color:#111827;
+                font-size:15px;
+                margin-bottom:8px;
+            ">
+                <strong>From:</strong> {source["name"]}
+            </div>
 
-        st.markdown(
-            f'<div class="location-text">'
-            f'<b>To:</b> {destination["name"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
+            <div style="
+                color:#111827;
+                font-size:15px;
+            ">
+                <strong>To:</strong> {destination["name"]}
+            </div>
 
-        st.markdown(
-            '</div>',
-            unsafe_allow_html=True
-        )
+        </div>
+        """)
+
+    # ========================================================
+    # INITIAL STATE
+    # ========================================================
 
     else:
 
-        st.markdown(
-            """
-            <div class="ready-card">
+        st.html("""
+        <div style="
+            background:#ffffff;
+            border:1px solid #e2e8f0;
+            border-radius:14px;
+            padding:55px 20px;
+            text-align:center;
+            color:#111827;
+        ">
 
-                <div style="font-size:48px;">
-                    🗺️
-                </div>
-
-                <div class="ready-title">
-                    Ready to calculate
-                </div>
-
-                <p class="ready-text">
-                    Select your source and destination,
-                    then click <b>Calculate Route</b>.
-                </p>
-
+            <div style="
+                font-size:48px;
+                margin-bottom:10px;
+            ">
+                🗺️
             </div>
-            """,
-            unsafe_allow_html=True
-        )
 
-# ==============================
+            <div style="
+                color:#111827;
+                font-size:22px;
+                font-weight:700;
+                margin-bottom:8px;
+            ">
+                Ready to calculate
+            </div>
+
+            <div style="
+                color:#64748b;
+                font-size:15px;
+            ">
+                Select your source and destination,
+                then click
+                <strong style="color:#111827;">
+                    Calculate Route
+                </strong>.
+            </div>
+
+        </div>
+        """)
+
+# ============================================================
 # FOOTER
-# ==============================
+# ============================================================
 
 st.divider()
 
-st.markdown(
-    '<div class="footer">'
-    'Routing powered by OpenStreetMap / OSRM.'
-    '</div>',
-    unsafe_allow_html=True
-)
+st.html("""
+<div class="footer-text">
+    Routing powered by OpenStreetMap / OSRM.
+</div>
+""")
