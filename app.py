@@ -15,12 +15,29 @@ st.markdown("""
    GLOBAL
    ============================== */
 
-html, body, [class*="css"] {
-    font-family: Arial, sans-serif;
+.stApp {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* Force all normal text to white */
+
+.stApp,
+.stApp p,
+.stApp span,
+.stApp label,
+.stApp div {
+    color: #ffffff;
 }
 
 /* ==============================
-   MAIN TITLE
+   TITLE
    ============================== */
 
 .app-title {
@@ -32,7 +49,7 @@ html, body, [class*="css"] {
 
 .app-subtitle {
     font-size: 17px;
-    color: #d1d5db !important;
+    color: #e5e7eb !important;
     margin-bottom: 30px;
 }
 
@@ -43,19 +60,19 @@ html, body, [class*="css"] {
 .section-title {
     font-size: 20px;
     font-weight: 650;
-    color: #111827 !important;
+    color: #ffffff !important;
     margin-bottom: 10px;
 }
 
 .route-heading {
-    color: #111827 !important;
+    color: #ffffff !important;
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 18px;
 }
 
 .locations-heading {
-    color: #111827 !important;
+    color: #ffffff !important;
     font-size: 22px;
     font-weight: 700;
     margin-top: 25px;
@@ -63,19 +80,64 @@ html, body, [class*="css"] {
 }
 
 /* ==============================
-   LOCATION PANEL
+   SOURCE / DESTINATION INPUT
    ============================== */
 
-.location-panel {
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 20px;
-    background: #ffffff;
+div[data-baseweb="input"] {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+div[data-baseweb="input"] > div {
+    background-color: #ffffff !important;
+}
+
+div[data-baseweb="input"] input {
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    caret-color: #111827 !important;
+}
+
+div[data-baseweb="input"] input::placeholder {
+    color: #6b7280 !important;
+    opacity: 1 !important;
+}
+
+/* ==============================
+   SELECTBOX
+   ============================== */
+
+div[data-baseweb="select"] {
     color: #111827 !important;
 }
 
-.location-panel * {
-    color: #111827;
+div[data-baseweb="select"] > div {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border-radius: 8px !important;
+}
+
+div[data-baseweb="select"] span {
+    color: #111827 !important;
+}
+
+div[data-baseweb="select"] svg {
+    fill: #111827 !important;
+}
+
+/* Selectbox dropdown */
+
+ul[data-testid="stSelectboxVirtualDropdown"] {
+    background-color: #ffffff !important;
+}
+
+div[role="option"] {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+div[role="option"] span {
+    color: #111827 !important;
 }
 
 /* ==============================
@@ -83,13 +145,13 @@ html, body, [class*="css"] {
    ============================== */
 
 .result-card {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #334155;
     border-radius: 14px;
     padding: 20px;
     margin-bottom: 14px;
-    background: #ffffff !important;
+    background-color: #ffffff !important;
     color: #111827 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.20);
 }
 
 .result-card * {
@@ -105,7 +167,7 @@ html, body, [class*="css"] {
 
 .result-label {
     font-size: 13px;
-    color: #6b7280 !important;
+    color: #4b5563 !important;
     font-weight: 600;
 }
 
@@ -134,83 +196,80 @@ html, body, [class*="css"] {
    READY CARD
    ============================== */
 
+.ready-card {
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 60px 20px;
+    background-color: #ffffff !important;
+    text-align: center;
+}
+
+.ready-card * {
+    color: #111827 !important;
+}
+
 .ready-title {
     color: #111827 !important;
 }
 
 .ready-text {
-    color: #6b7280 !important;
+    color: #4b5563 !important;
     font-size: 15px;
-}
-
-/* ==============================
-   STREAMLIT INPUT LABELS
-   ============================== */
-
-label {
-    color: #111827 !important;
-}
-
-/* ==============================
-   STREAMLIT TEXT INPUT
-   ============================== */
-
-div[data-baseweb="input"] {
-    background-color: #ffffff !important;
-}
-
-div[data-baseweb="input"] input {
-    color: #111827 !important;
-    background-color: #ffffff !important;
-}
-
-div[data-baseweb="input"] input::placeholder {
-    color: #6b7280 !important;
-    opacity: 1 !important;
-}
-
-/* ==============================
-   SELECTBOX
-   ============================== */
-
-div[data-baseweb="select"] {
-    color: #111827 !important;
-}
-
-div[data-baseweb="select"] > div {
-    background-color: #ffffff !important;
-    color: #111827 !important;
-}
-
-div[data-baseweb="select"] span {
-    color: #111827 !important;
 }
 
 /* ==============================
    BUTTON
    ============================== */
 
-button {
+.stButton > button {
+    color: #ffffff !important;
     font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+/* ==============================
+   WARNING / ERROR / INFO
+   ============================== */
+
+.stAlert,
+.stAlert * {
+    color: #111827 !important;
 }
 
 /* ==============================
    CAPTION
    ============================== */
 
-div[data-testid="stCaptionContainer"] {
-    color: #6b7280 !important;
+div[data-testid="stCaptionContainer"],
+div[data-testid="stCaptionContainer"] * {
+    color: #e5e7eb !important;
 }
 
 /* ==============================
-   REMOVE EXTRA TOP SPACE
+   SPINNER
    ============================== */
 
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
+.stSpinner,
+.stSpinner * {
+    color: #ffffff !important;
 }
+
+/* ==============================
+   DIVIDER
+   ============================== */
+
+hr {
+    border-color: #334155 !important;
+}
+
+/* ==============================
+   REMOVE EXTRA STREAMLIT CONTAINERS
+   ============================== */
+
+div[data-testid="stVerticalBlock"] {
+    gap: 0.5rem;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -224,7 +283,9 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="app-subtitle">Compare distance and estimated travel time between two locations.</div>',
+    '<div class="app-subtitle">'
+    'Compare distance and estimated travel time between two locations.'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -272,6 +333,7 @@ with left:
     source = None
 
     if source_options:
+
         source_index = st.selectbox(
             "Select source",
             range(len(source_options)),
@@ -310,6 +372,7 @@ with left:
     destination = None
 
     if destination_options:
+
         destination_index = st.selectbox(
             "Select destination",
             range(len(destination_options)),
@@ -403,7 +466,7 @@ with right:
                     })
 
         # ==============================
-        # ROUTE CARDS
+        # ROUTE RESULTS
         # ==============================
 
         for result in results:
@@ -450,8 +513,19 @@ with right:
             )
 
             if result["error"]:
-                st.caption(
-                    f"{result['mode']} route unavailable."
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        color:#fecaca !important;
+                        font-size:13px;
+                        margin-top:-8px;
+                        margin-bottom:12px;
+                    ">
+                        {result["mode"]} route unavailable.
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
 
         # ==============================
@@ -459,7 +533,9 @@ with right:
         # ==============================
 
         st.markdown(
-            '<div class="locations-heading">📌 Selected Locations</div>',
+            '<div class="locations-heading">'
+            '📌 Selected Locations'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -484,11 +560,7 @@ with right:
 
         st.markdown(
             """
-            <div class="result-card"
-                 style="
-                    text-align:center;
-                    padding:60px 20px;
-                 ">
+            <div class="ready-card">
 
                 <div style="font-size:48px;">
                     🗺️
@@ -501,9 +573,7 @@ with right:
                 <p class="ready-text">
                     Select your source and destination,
                     then click
-                    <b style="color:#111827 !important;">
-                        Calculate Route
-                    </b>.
+                    <b>Calculate Route</b>.
                 </p>
 
             </div>
@@ -521,7 +591,7 @@ st.markdown(
     """
     <div style="
         text-align:center;
-        color:#6b7280 !important;
+        color:#e5e7eb !important;
         font-size:13px;
     ">
         Routing powered by OpenStreetMap / OSRM.
