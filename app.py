@@ -9,78 +9,64 @@ st.set_page_config(
     layout="wide"
 )
 
+# ==============================
+# THEME / CSS
+# ==============================
+
 st.markdown("""
 <style>
-/* ==============================
-   GLOBAL
-   ============================== */
-
+/* Main application */
 .stApp {
-    background-color: #0f172a !important;
-    color: #ffffff !important;
+    background: #0f172a !important;
 }
 
+/* Main content */
 .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 1200px !important;
 }
 
-/* Force all normal text to white */
-
-.stApp,
-.stApp p,
-.stApp span,
-.stApp label,
-.stApp div {
-    color: #ffffff;
-}
-
-/* ==============================
-   TITLE
-   ============================== */
-
+/* Main title */
 .app-title {
-    font-size: 38px;
-    font-weight: 700;
     color: #ffffff !important;
-    margin-bottom: 4px;
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
 }
 
+/* Subtitle */
 .app-subtitle {
-    font-size: 17px;
-    color: #e5e7eb !important;
-    margin-bottom: 30px;
+    color: #cbd5e1 !important;
+    font-size: 17px !important;
+    margin-bottom: 30px !important;
 }
 
-/* ==============================
-   SECTION HEADINGS
-   ============================== */
-
+/* Section headings */
 .section-title {
-    font-size: 20px;
-    font-weight: 650;
     color: #ffffff !important;
-    margin-bottom: 10px;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    margin-bottom: 10px !important;
 }
 
 .route-heading {
     color: #ffffff !important;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 18px;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    margin-bottom: 15px !important;
 }
 
 .locations-heading {
     color: #ffffff !important;
-    font-size: 22px;
-    font-weight: 700;
-    margin-top: 25px;
-    margin-bottom: 15px;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    margin-top: 20px !important;
+    margin-bottom: 12px !important;
 }
 
 /* ==============================
-   SOURCE / DESTINATION INPUT
+   INPUT BOXES
    ============================== */
 
 div[data-baseweb="input"] {
@@ -95,25 +81,21 @@ div[data-baseweb="input"] > div {
 div[data-baseweb="input"] input {
     color: #111827 !important;
     background-color: #ffffff !important;
-    caret-color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
 }
 
 div[data-baseweb="input"] input::placeholder {
     color: #6b7280 !important;
+    -webkit-text-fill-color: #6b7280 !important;
     opacity: 1 !important;
 }
 
 /* ==============================
-   SELECTBOX
+   SELECT BOX
    ============================== */
-
-div[data-baseweb="select"] {
-    color: #111827 !important;
-}
 
 div[data-baseweb="select"] > div {
     background-color: #ffffff !important;
-    color: #111827 !important;
     border-radius: 8px !important;
 }
 
@@ -125,9 +107,8 @@ div[data-baseweb="select"] svg {
     fill: #111827 !important;
 }
 
-/* Selectbox dropdown */
-
-ul[data-testid="stSelectboxVirtualDropdown"] {
+/* Dropdown options */
+div[role="listbox"] {
     background-color: #ffffff !important;
 }
 
@@ -136,7 +117,7 @@ div[role="option"] {
     color: #111827 !important;
 }
 
-div[role="option"] span {
+div[role="option"] * {
     color: #111827 !important;
 }
 
@@ -145,50 +126,54 @@ div[role="option"] span {
    ============================== */
 
 .result-card {
-    border: 1px solid #334155;
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 14px;
     background-color: #ffffff !important;
-    color: #111827 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.20);
-}
-
-.result-card * {
-    color: #111827 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    padding: 20px !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
 }
 
 .result-title {
-    font-size: 20px;
-    font-weight: 650;
-    margin-bottom: 14px;
     color: #111827 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    margin-bottom: 16px !important;
 }
 
 .result-label {
-    font-size: 13px;
-    color: #4b5563 !important;
-    font-weight: 600;
+    color: #64748b !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
 }
 
 .result-value {
-    font-size: 24px;
-    font-weight: 700;
-    margin-top: 3px;
     color: #111827 !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    margin-top: 3px !important;
 }
 
 /* ==============================
-   SELECTED LOCATIONS
+   LOCATION CARD
    ============================== */
 
-.selected-location {
-    font-size: 15px;
-    color: #374151 !important;
-    margin-bottom: 7px;
+.location-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    padding: 20px !important;
+    margin-bottom: 14px !important;
 }
 
-.selected-location b {
+.location-text {
+    color: #111827 !important;
+    font-size: 15px !important;
+    margin-bottom: 8px !important;
+}
+
+.location-text b {
     color: #111827 !important;
 }
 
@@ -197,24 +182,22 @@ div[role="option"] span {
    ============================== */
 
 .ready-card {
-    border: 1px solid #334155;
-    border-radius: 14px;
-    padding: 60px 20px;
     background-color: #ffffff !important;
-    text-align: center;
-}
-
-.ready-card * {
-    color: #111827 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    padding: 55px 20px !important;
+    text-align: center !important;
 }
 
 .ready-title {
     color: #111827 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
 }
 
 .ready-text {
-    color: #4b5563 !important;
-    font-size: 15px;
+    color: #64748b !important;
+    font-size: 15px !important;
 }
 
 /* ==============================
@@ -222,54 +205,27 @@ div[role="option"] span {
    ============================== */
 
 .stButton > button {
-    color: #ffffff !important;
-    font-weight: 600 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+/* ==============================
+   WARNINGS / ERRORS
+   ============================== */
+
+div[data-testid="stAlert"] {
     border-radius: 8px !important;
 }
 
 /* ==============================
-   WARNING / ERROR / INFO
+   FOOTER
    ============================== */
 
-.stAlert,
-.stAlert * {
-    color: #111827 !important;
+.footer {
+    color: #94a3b8 !important;
+    text-align: center !important;
+    font-size: 13px !important;
 }
-
-/* ==============================
-   CAPTION
-   ============================== */
-
-div[data-testid="stCaptionContainer"],
-div[data-testid="stCaptionContainer"] * {
-    color: #e5e7eb !important;
-}
-
-/* ==============================
-   SPINNER
-   ============================== */
-
-.stSpinner,
-.stSpinner * {
-    color: #ffffff !important;
-}
-
-/* ==============================
-   DIVIDER
-   ============================== */
-
-hr {
-    border-color: #334155 !important;
-}
-
-/* ==============================
-   REMOVE EXTRA STREAMLIT CONTAINERS
-   ============================== */
-
-div[data-testid="stVerticalBlock"] {
-    gap: 0.5rem;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -300,14 +256,14 @@ if "destination_results" not in st.session_state:
     st.session_state.destination_results = []
 
 # ==============================
-# LAYOUT
+# MAIN LAYOUT
 # ==============================
 
 left, right = st.columns([1, 2], gap="large")
 
-# ==============================
+# ============================================================
 # LEFT SIDE
-# ==============================
+# ============================================================
 
 with left:
 
@@ -325,7 +281,9 @@ with left:
 
     if source_query and len(source_query.strip()) >= 3:
         try:
-            st.session_state.source_results = search_places(source_query)
+            st.session_state.source_results = search_places(
+                source_query.strip()
+            )
         except Exception as e:
             st.error(f"Search failed: {e}")
 
@@ -363,7 +321,7 @@ with left:
     if destination_query and len(destination_query.strip()) >= 3:
         try:
             st.session_state.destination_results = search_places(
-                destination_query
+                destination_query.strip()
             )
         except Exception as e:
             st.error(f"Search failed: {e}")
@@ -393,9 +351,9 @@ with left:
         use_container_width=True
     )
 
-# ==============================
+# ============================================================
 # RIGHT SIDE
-# ==============================
+# ============================================================
 
 with right:
 
@@ -465,72 +423,74 @@ with right:
                         "error": str(e)
                     })
 
-        # ==============================
-        # ROUTE RESULTS
-        # ==============================
+        # ====================================================
+        # ROUTE RESULT CARDS
+        # ====================================================
 
         for result in results:
 
-            st.markdown(
-                f"""
-                <div class="result-card">
-
-                    <div class="result-title">
-                        {result["icon"]} {result["mode"]}
-                    </div>
-
-                    <div style="
-                        display:flex;
-                        gap:80px;
-                        flex-wrap:wrap;
-                    ">
-
-                        <div>
-                            <div class="result-label">
-                                DISTANCE
-                            </div>
-
-                            <div class="result-value">
-                                {result["distance"]}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="result-label">
-                                ESTIMATED TIME
-                            </div>
-
-                            <div class="result-value">
-                                {result["duration"]}
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            if result["error"]:
+            with st.container():
 
                 st.markdown(
-                    f"""
-                    <div style="
-                        color:#fecaca !important;
-                        font-size:13px;
-                        margin-top:-8px;
-                        margin-bottom:12px;
-                    ">
-                        {result["mode"]} route unavailable.
-                    </div>
-                    """,
+                    '<div class="result-card">',
                     unsafe_allow_html=True
                 )
 
-        # ==============================
+                st.markdown(
+                    f'<div class="result-title">'
+                    f'{result["icon"]} {result["mode"]}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    st.markdown(
+                        '<div class="result-label">'
+                        'DISTANCE'
+                        '</div>',
+                        unsafe_allow_html=True
+                    )
+
+                    st.markdown(
+                        f'<div class="result-value">'
+                        f'{result["distance"]}'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+                with col2:
+
+                    st.markdown(
+                        '<div class="result-label">'
+                        'ESTIMATED TIME'
+                        '</div>',
+                        unsafe_allow_html=True
+                    )
+
+                    st.markdown(
+                        f'<div class="result-value">'
+                        f'{result["duration"]}'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+                st.markdown(
+                    '</div>',
+                    unsafe_allow_html=True
+                )
+
+            if result["error"]:
+
+                st.caption(
+                    f'{result["mode"]} route unavailable.'
+                )
+
+        # ====================================================
         # SELECTED LOCATIONS
-        # ==============================
+        # ====================================================
 
         st.markdown(
             '<div class="locations-heading">'
@@ -540,19 +500,26 @@ with right:
         )
 
         st.markdown(
-            f"""
-            <div class="result-card">
+            '<div class="location-card">',
+            unsafe_allow_html=True
+        )
 
-                <div class="selected-location">
-                    <b>From:</b> {source["name"]}
-                </div>
+        st.markdown(
+            f'<div class="location-text">'
+            f'<b>From:</b> {source["name"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
-                <div class="selected-location">
-                    <b>To:</b> {destination["name"]}
-                </div>
+        st.markdown(
+            f'<div class="location-text">'
+            f'<b>To:</b> {destination["name"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
-            </div>
-            """,
+        st.markdown(
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -566,14 +533,13 @@ with right:
                     🗺️
                 </div>
 
-                <h3 class="ready-title">
+                <div class="ready-title">
                     Ready to calculate
-                </h3>
+                </div>
 
                 <p class="ready-text">
                     Select your source and destination,
-                    then click
-                    <b>Calculate Route</b>.
+                    then click <b>Calculate Route</b>.
                 </p>
 
             </div>
@@ -588,14 +554,8 @@ with right:
 st.divider()
 
 st.markdown(
-    """
-    <div style="
-        text-align:center;
-        color:#e5e7eb !important;
-        font-size:13px;
-    ">
-        Routing powered by OpenStreetMap / OSRM.
-    </div>
-    """,
+    '<div class="footer">'
+    'Routing powered by OpenStreetMap / OSRM.'
+    '</div>',
     unsafe_allow_html=True
 )
