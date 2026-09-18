@@ -15,7 +15,6 @@ from typing import Any, Optional
 
 import requests
 
-_session = requests.Session()
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 AUTOCOMPLETE_URL = "https://places.googleapis.com/v1/places:autocomplete"
 ROUTE_MATRIX_URL = "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix"
@@ -24,6 +23,10 @@ COMPUTE_ROUTES_URL = "https://routes.googleapis.com/directions/v2:computeRoutes"
 # Google's cap on origins x destinations per computeRouteMatrix request,
 # for non-TRANSIT, non-TRAFFIC_AWARE_OPTIMAL requests.
 MAX_ELEMENTS_PER_MATRIX_REQUEST = 625
+
+# One shared session so repeated calls reuse the same TCP/TLS connection
+# instead of paying handshake overhead on every single request.
+_session = requests.Session()
 
 
 class MapsAPIError(Exception):
@@ -54,14 +57,13 @@ def geocode(address: str, api_key: str, region: Optional[str] = "in", timeout: i
 
     Returns None if Google found nothing (ZERO_RESULTS) - that's not an
     error, just "not found", so the caller can decide whether to retry
-    with region=None (global search).
+    with a different region or a modified query.
     """
     params = {"address": address, "key": api_key}
     if region:
         params["region"] = region
 
     def _call():
-        # resp = requests.get(GEOCODE_URL, params=params, timeout=timeout)
         resp = _session.get(GEOCODE_URL, params=params, timeout=timeout)
         data = resp.json()
         status = data.get("status")
@@ -96,7 +98,6 @@ def autocomplete(
         body["sessionToken"] = session_token
 
     def _call():
-        # resp = requests.post(AUTOCOMPLETE_URL, headers=headers, json=body, timeout=timeout)
         resp = _session.post(AUTOCOMPLETE_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"Autocomplete HTTP {resp.status_code}")
@@ -127,6 +128,11 @@ def compute_route_matrix(
     Batch distance/duration lookup for up to 625 origin x destination
     elements in a single call. Returns a list of:
         {"origin_index", "destination_index", "distance_m", "duration_s", "found"}
+
+    Elements Google returns without origin/destination indices (occasional
+    per-element errors on Google's side) are skipped rather than crashing
+    the whole batch - that pair just comes back unresolved and gets
+    retried on a later run.
     """
     n_elements = len(origins) * len(destinations)
     if n_elements > MAX_ELEMENTS_PER_MATRIX_REQUEST:
@@ -154,34 +160,17 @@ def compute_route_matrix(
     }
 
     def _call():
-        # resp = requests.post(ROUTE_MATRIX_URL, headers=headers, json=body, timeout=timeout)
         resp = _session.post(ROUTE_MATRIX_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"Route Matrix HTTP {resp.status_code}")
         if resp.status_code != 200:
             raise MapsAPIError(f"Route Matrix failed: HTTP {resp.status_code} - {resp.text[:300]}")
-
-
-        # elements = resp.json()
-        # out = []
-        # for el in elements:
-        #     found = el.get("condition") == "ROUTE_EXISTS"
-        #     out.append({
-        #         "origin_index": el["originIndex"],
-        #         "destination_index": el["destinationIndex"],
-        #         "distance_m": el.get("distanceMeters") if found else None,
-        #         "duration_s": _parse_duration(el.get("duration")) if found else None,
-        #         "found": found,
-        #     })
-
         elements = resp.json()
         out = []
         for el in elements:
             if "originIndex" not in el or "destinationIndex" not in el:
-                # Occasionally Google returns a per-element error without
-                # indices - skip it instead of crashing the whole batch;
-                # that pair just gets treated as unresolved and retried
-                # on the next run.
+                # Per-element error on Google's side with no indices attached
+                # - skip it instead of crashing the whole batch.
                 print(f"[maps_client] Skipping malformed route matrix element: {el}")
                 continue
             found = el.get("condition") == "ROUTE_EXISTS"
@@ -224,7 +213,6 @@ def compute_route(
         body["routingPreference"] = routing_preference
 
     def _call():
-        # resp = requests.post(COMPUTE_ROUTES_URL, headers=headers, json=body, timeout=timeout)
         resp = _session.post(COMPUTE_ROUTES_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"computeRoutes HTTP {resp.status_code}")

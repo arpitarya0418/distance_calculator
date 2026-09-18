@@ -4,14 +4,21 @@ fully-populated distance/duration/status DataFrame, as fast and cheaply as
 possible:
 
   1. Deduplicate to unique (source, destination) pairs.
-  2. Check the on-disk cache for pairs already resolved.
-  3. Geocode any places not yet resolved (India-first, global-fallback),
+  2. Check the on-disk cache for pairs already resolved - but only trust a
+     cached entry if it's a genuine, non-zero result. A cached "not found"
+     or a distance of 0 is treated as unresolved and retried, since either
+     one is more likely to be a past failure (rate limit, a bad element,
+     an ambiguous name) than a confirmed answer.
+  3. Geocode any places not yet resolved (India-first, then global, then
+     retried with ", India" appended to the query - see geocode_service),
      concurrently.
-  4. Group remaining pairs by origin, chunk each origin's destinations into
-     batches of <=625 elements, and fire those batches concurrently against
-     computeRouteMatrix.
+  4. Group remaining pairs by origin, chunk into batches sized so there are
+     at least max_workers of them (so worker threads actually run in
+     parallel instead of a few oversized requests dominating), and fire
+     those batches concurrently against computeRouteMatrix.
   5. Broadcast each unique pair's result back onto every original row that
-     shares it, and save newly-resolved pairs to the cache.
+     shares it, saving newly-resolved pairs to the cache periodically so a
+     mid-run failure doesn't lose everything resolved so far.
 """
 from __future__ import annotations
 
@@ -26,6 +33,7 @@ from .cache_store import DistanceCache
 from .geocode_service import resolve_place, ResolvedPlace
 
 MAX_ELEMENTS = maps_client.MAX_ELEMENTS_PER_MATRIX_REQUEST
+SAVE_EVERY_N_BATCHES = 25
 
 
 @dataclass
@@ -36,6 +44,20 @@ class BatchProgress:
     geocode_failures: int = 0
     api_calls_made: int = 0
     elements_resolved: int = 0
+
+
+def _cached_result_is_usable(cached: Optional[dict]) -> bool:
+    """A cached row is only trustworthy if it's a confirmed, non-zero find.
+    A cached "not found" or a 0 distance is treated as unresolved so it
+    gets retried instead of permanently stuck."""
+    if cached is None:
+        return False
+    if not cached.get("found"):
+        return False
+    distance = cached.get("distance_m")
+    if pd.isna(distance) or distance in (0, None):
+        return False
+    return True
 
 
 def process_dataframe(
@@ -65,12 +87,12 @@ def process_dataframe(
     progress.total_pairs = len(pairs)
     _report(f"{len(pairs)} unique source/destination pairs out of {len(out)} rows")
 
-    # --- 2. cache lookup ---
+    # --- 2. cache lookup (only trusting confirmed, non-zero results) ---
     pair_results: dict[tuple[str, str], dict] = {}
     uncached_pairs: list[tuple[str, str]] = []
     for _, row in pairs.iterrows():
         cached = cache.get(row["source"], row["destination"])
-        if cached is not None:
+        if _cached_result_is_usable(cached):
             pair_results[(row["source"], row["destination"])] = cached
             progress.cache_hits += 1
         else:
@@ -98,16 +120,10 @@ def process_dataframe(
                     progress.geocode_failures += 1
         _report(f"Geocoded {progress.geocoded}, failed to resolve {progress.geocode_failures}")
 
-        # --- 4. group by origin, chunk to <=625 elements, batch concurrently ---
+        # --- 4. group by origin, chunk for parallelism, batch concurrently ---
         by_origin: dict[str, list[str]] = {}
         for src, dst in uncached_pairs:
             by_origin.setdefault(src, []).append(dst)
-
-        # batch_jobs: list[tuple[str, list[str]]] = []
-        # for origin, dests in by_origin.items():
-        #     dests = list(dict.fromkeys(dests))  # dedupe, preserve order
-        #     for i in range(0, len(dests), MAX_ELEMENTS):
-        #         batch_jobs.append((origin, dests[i:i + MAX_ELEMENTS]))
 
         total_dests = sum(len(d) for d in by_origin.values())
         # Aim for at least max_workers batches so every worker thread has
@@ -144,12 +160,6 @@ def process_dataframe(
                 return origin, list(valid_dests), None
             return origin, list(valid_dests), elements
 
-        # with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        #     futures = [executor.submit(_run_batch, origin, dests) for origin, dests in batch_jobs]
-        #     for future in as_completed(futures):
-        #         origin, dests, elements = future.result()
-        #         progress.api_calls_made += 1
-
         try:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = [executor.submit(_run_batch, origin, dests) for origin, dests in batch_jobs]
@@ -161,7 +171,10 @@ def process_dataframe(
                         for dst in dests:
                             result = {"distance_m": None, "duration_s": None, "found": False, "used_global_fallback": False}
                             pair_results[(origin, dst)] = result
-                            cache.put(origin, dst, "DRIVE", None, None, False, False)
+                            # Deliberately NOT cached: a failed/empty batch is
+                            # indistinguishable here from a transient error, so
+                            # leaving it out of the cache means it gets a fresh
+                            # attempt on the next run instead of being stuck.
                         continue
 
                     origin_place = place_cache.get(origin.strip().lower())
@@ -177,14 +190,17 @@ def process_dataframe(
                             "found": el["found"], "used_global_fallback": used_fallback,
                         }
                         pair_results[(origin, dst)] = result
-                        cache.put(origin, dst, "DRIVE", el["distance_m"], el["duration_s"], el["found"], used_fallback)
+                        if el["found"] and el["distance_m"]:
+                            # Only cache confirmed, non-zero results.
+                            cache.put(origin, dst, "DRIVE", el["distance_m"], el["duration_s"], True, used_fallback)
                         progress.elements_resolved += 1
 
                     _report(f"{progress.elements_resolved}/{len(uncached_pairs)} pairs resolved")
 
-                    # cache.save()
-                    if i % 25 == 0:
-                            cache.save()
+                    # Save periodically so a crash mid-run only risks losing
+                    # the last partial stretch of batches, not everything so far.
+                    if i % SAVE_EVERY_N_BATCHES == 0:
+                        cache.save()
         finally:
             cache.save()
 
