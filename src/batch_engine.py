@@ -103,11 +103,23 @@ def process_dataframe(
         for src, dst in uncached_pairs:
             by_origin.setdefault(src, []).append(dst)
 
+        # batch_jobs: list[tuple[str, list[str]]] = []
+        # for origin, dests in by_origin.items():
+        #     dests = list(dict.fromkeys(dests))  # dedupe, preserve order
+        #     for i in range(0, len(dests), MAX_ELEMENTS):
+        #         batch_jobs.append((origin, dests[i:i + MAX_ELEMENTS]))
+
+        total_dests = sum(len(d) for d in by_origin.values())
+        # Aim for at least max_workers batches so every worker thread has
+        # something to do concurrently, instead of a few oversized requests
+        # running one after another in effect.
+        chunk_size = min(MAX_ELEMENTS, max(total_dests // max_workers, 1))
+
         batch_jobs: list[tuple[str, list[str]]] = []
         for origin, dests in by_origin.items():
             dests = list(dict.fromkeys(dests))  # dedupe, preserve order
-            for i in range(0, len(dests), MAX_ELEMENTS):
-                batch_jobs.append((origin, dests[i:i + MAX_ELEMENTS]))
+            for i in range(0, len(dests), chunk_size):
+                batch_jobs.append((origin, dests[i:i + chunk_size]))
 
         _report(f"Running {len(batch_jobs)} batched Route Matrix request(s)")
 
@@ -132,38 +144,49 @@ def process_dataframe(
                 return origin, list(valid_dests), None
             return origin, list(valid_dests), elements
 
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(_run_batch, origin, dests) for origin, dests in batch_jobs]
-            for future in as_completed(futures):
-                origin, dests, elements = future.result()
-                progress.api_calls_made += 1
+        # with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        #     futures = [executor.submit(_run_batch, origin, dests) for origin, dests in batch_jobs]
+        #     for future in as_completed(futures):
+        #         origin, dests, elements = future.result()
+        #         progress.api_calls_made += 1
 
-                if elements is None:
-                    for dst in dests:
-                        result = {"distance_m": None, "duration_s": None, "found": False, "used_global_fallback": False}
+        try:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = [executor.submit(_run_batch, origin, dests) for origin, dests in batch_jobs]
+                for i, future in enumerate(as_completed(futures), start=1):
+                    origin, dests, elements = future.result()
+                    progress.api_calls_made += 1
+
+                    if elements is None:
+                        for dst in dests:
+                            result = {"distance_m": None, "duration_s": None, "found": False, "used_global_fallback": False}
+                            pair_results[(origin, dst)] = result
+                            cache.put(origin, dst, "DRIVE", None, None, False, False)
+                        continue
+
+                    origin_place = place_cache.get(origin.strip().lower())
+                    for el in elements:
+                        dst = dests[el["destination_index"]]
+                        dst_place = place_cache.get(dst.strip().lower())
+                        used_fallback = bool(
+                            (origin_place and origin_place.used_global_fallback)
+                            or (dst_place and dst_place.used_global_fallback)
+                        )
+                        result = {
+                            "distance_m": el["distance_m"], "duration_s": el["duration_s"],
+                            "found": el["found"], "used_global_fallback": used_fallback,
+                        }
                         pair_results[(origin, dst)] = result
-                        cache.put(origin, dst, "DRIVE", None, None, False, False)
-                    continue
+                        cache.put(origin, dst, "DRIVE", el["distance_m"], el["duration_s"], el["found"], used_fallback)
+                        progress.elements_resolved += 1
 
-                origin_place = place_cache.get(origin.strip().lower())
-                for el in elements:
-                    dst = dests[el["destination_index"]]
-                    dst_place = place_cache.get(dst.strip().lower())
-                    used_fallback = bool(
-                        (origin_place and origin_place.used_global_fallback)
-                        or (dst_place and dst_place.used_global_fallback)
-                    )
-                    result = {
-                        "distance_m": el["distance_m"], "duration_s": el["duration_s"],
-                        "found": el["found"], "used_global_fallback": used_fallback,
-                    }
-                    pair_results[(origin, dst)] = result
-                    cache.put(origin, dst, "DRIVE", el["distance_m"], el["duration_s"], el["found"], used_fallback)
-                    progress.elements_resolved += 1
+                    _report(f"{progress.elements_resolved}/{len(uncached_pairs)} pairs resolved")
 
-                _report(f"{progress.elements_resolved}/{len(uncached_pairs)} pairs resolved")
-
-        cache.save()
+                    # cache.save()
+                    if i % 25 == 0:
+                            cache.save()
+        finally:
+            cache.save()
 
     # --- 5. broadcast back onto every row ---
     def _status_for(res: dict) -> str:

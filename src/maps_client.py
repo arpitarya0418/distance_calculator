@@ -15,6 +15,7 @@ from typing import Any, Optional
 
 import requests
 
+_session = requests.Session()
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 AUTOCOMPLETE_URL = "https://places.googleapis.com/v1/places:autocomplete"
 ROUTE_MATRIX_URL = "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix"
@@ -60,7 +61,8 @@ def geocode(address: str, api_key: str, region: Optional[str] = "in", timeout: i
         params["region"] = region
 
     def _call():
-        resp = requests.get(GEOCODE_URL, params=params, timeout=timeout)
+        # resp = requests.get(GEOCODE_URL, params=params, timeout=timeout)
+        resp = _session.get(GEOCODE_URL, params=params, timeout=timeout)
         data = resp.json()
         status = data.get("status")
         if status == "OK":
@@ -94,7 +96,8 @@ def autocomplete(
         body["sessionToken"] = session_token
 
     def _call():
-        resp = requests.post(AUTOCOMPLETE_URL, headers=headers, json=body, timeout=timeout)
+        # resp = requests.post(AUTOCOMPLETE_URL, headers=headers, json=body, timeout=timeout)
+        resp = _session.post(AUTOCOMPLETE_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"Autocomplete HTTP {resp.status_code}")
         if resp.status_code != 200:
@@ -151,14 +154,36 @@ def compute_route_matrix(
     }
 
     def _call():
-        resp = requests.post(ROUTE_MATRIX_URL, headers=headers, json=body, timeout=timeout)
+        # resp = requests.post(ROUTE_MATRIX_URL, headers=headers, json=body, timeout=timeout)
+        resp = _session.post(ROUTE_MATRIX_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"Route Matrix HTTP {resp.status_code}")
         if resp.status_code != 200:
             raise MapsAPIError(f"Route Matrix failed: HTTP {resp.status_code} - {resp.text[:300]}")
+
+
+        # elements = resp.json()
+        # out = []
+        # for el in elements:
+        #     found = el.get("condition") == "ROUTE_EXISTS"
+        #     out.append({
+        #         "origin_index": el["originIndex"],
+        #         "destination_index": el["destinationIndex"],
+        #         "distance_m": el.get("distanceMeters") if found else None,
+        #         "duration_s": _parse_duration(el.get("duration")) if found else None,
+        #         "found": found,
+        #     })
+
         elements = resp.json()
         out = []
         for el in elements:
+            if "originIndex" not in el or "destinationIndex" not in el:
+                # Occasionally Google returns a per-element error without
+                # indices - skip it instead of crashing the whole batch;
+                # that pair just gets treated as unresolved and retried
+                # on the next run.
+                print(f"[maps_client] Skipping malformed route matrix element: {el}")
+                continue
             found = el.get("condition") == "ROUTE_EXISTS"
             out.append({
                 "origin_index": el["originIndex"],
@@ -199,7 +224,8 @@ def compute_route(
         body["routingPreference"] = routing_preference
 
     def _call():
-        resp = requests.post(COMPUTE_ROUTES_URL, headers=headers, json=body, timeout=timeout)
+        # resp = requests.post(COMPUTE_ROUTES_URL, headers=headers, json=body, timeout=timeout)
+        resp = _session.post(COMPUTE_ROUTES_URL, headers=headers, json=body, timeout=timeout)
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableError(f"computeRoutes HTTP {resp.status_code}")
         if resp.status_code != 200:
